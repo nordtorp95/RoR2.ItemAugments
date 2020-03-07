@@ -42,6 +42,9 @@
           <e p="AugmentResolver.cs" t="Include" />
           <e p="AugmentShop.cs" t="Include" />
         </e>
+        <e p="UI" t="Include">
+          <e p="AugmentsWindow.cs" t="Include" />
+        </e>
       </e>
       <e p="ItemsTalentTree.sln" t="IncludeFlat" />
       <e p="packages" t="ExcludeRecursive" />

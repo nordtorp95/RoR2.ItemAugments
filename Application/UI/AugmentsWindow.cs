@@ -30,7 +30,7 @@ namespace Application.UI
                 {                   
                     if (GUILayout.Button(new GUIContent(augment.Augment.Name, itemDef.pickupIconTexture)))
                     {
-                        AugmentResolver.TryAddAugmentToPlayer(firstPlayer.netId, itemDef.itemIndex, augment.Augment);
+                        AugmentResolver.TryAddAugmentToPlayer(firstPlayer.netId, itemDef.itemIndex, augment.Augment.Id);
                         Chat.AddMessage($"{firstNetworkUser.userName} unlocked augment {augment.Augment.Name}");
                     }
                 }

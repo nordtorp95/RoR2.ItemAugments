@@ -31,18 +31,17 @@ namespace Application
             if (Input.GetKeyDown(KeyCode.F3))
             {
                 var firstPlayer = PlayerCharacterMasterController.instances[0].master.netId;
-                var purchasable = AugmentShop.GetAvailableItems(firstPlayer);
-                var purchaseString = "Available augments: ";
-                foreach (var item in purchasable)
+                var viewModel = AugmentShop.GetShopViewModel(firstPlayer);
+                Chat.AddMessage("Items in shop:");
+                foreach (var item in viewModel.Items)
                 {
-                    var augmentString = "";
-                    foreach (var augment in item.Value)
+                    Chat.AddMessage($"Item name: {item.ItemIndex}, Points to spend: {item.PointsToSpend}");
+                    foreach (var augment in item.Augments)
                     {
-                        augmentString += $", {augment.Value.Name}";
+                        Chat.AddMessage($"- AugmentName: {augment.Augment.Name}, Active: {augment.Active}, Available: {augment.Purchasable}");
                     }
-                    purchaseString += $"Item: {item.Key}, Augments: {augmentString}";
+                    Chat.AddMessage("------");
                 }
-                Chat.AddMessage(purchaseString);
             }
         }
 

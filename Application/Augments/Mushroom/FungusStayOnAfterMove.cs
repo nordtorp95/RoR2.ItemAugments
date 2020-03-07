@@ -18,6 +18,7 @@ namespace Application.Augments.Mushroom
         public override string Name => "ShroomStayActive";
         public override string Description => "Shroom stays active after moving";
         public override ItemIndex ItemType => ItemIndex.Mushroom;
+        public override AugmentId Id => new AugmentId(nameof(FungusStayOnAfterMove));
 
         public override void Activate()
         {
@@ -32,7 +33,7 @@ namespace Application.Augments.Mushroom
                 ilCursor.EmitDelegate<Func<CharacterBody, bool>>((cb) =>
                 {
                     if (!AugmentResolver.IsAugmentActiveForPlayer(ItemIndex.Mushroom,
-                        nameof(FungusStayOnAfterMove),
+                        Id, 
                         cb.master.netId))
                     {
                         return cb.GetNotMoving();

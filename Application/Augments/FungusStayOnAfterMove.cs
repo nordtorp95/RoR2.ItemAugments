@@ -31,10 +31,9 @@ namespace Application.Augments
                 ilCursor.Remove();
                 ilCursor.EmitDelegate<Func<CharacterBody, bool>>((cb) =>
                 {
-                    Chat.AddMessage(cb.networkIdentity.);
                     if (!AugmentResolver.IsActiveFor(ItemIndex.Mushroom,
                         nameof(FungusStayOnAfterMove),
-                        cb.networkIdentity))
+                        cb.master.netId))
                     {
                         return cb.GetNotMoving();
                     }

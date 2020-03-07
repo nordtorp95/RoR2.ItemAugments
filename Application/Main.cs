@@ -33,7 +33,7 @@ namespace Application
             CharacterBody body,
             Inventory inventory)
         {
-            var networkIdentity = body.networkIdentity;
+            var networkIdentity = body.master.netId;
             var item = PickupCatalog.GetPickupDef(self.pickupIndex);
             var itemDef = ItemCatalog.GetItemDef(item.itemIndex);
 

@@ -13,7 +13,7 @@ namespace Application
         private static IDictionary<ItemIndex, IDictionary<string, AugmentBase>> _availableAugments;
 
         private static
-            ConcurrentDictionary<NetworkIdentity,
+            ConcurrentDictionary<NetworkInstanceId,
                 ConcurrentDictionary<ItemIndex, ConcurrentDictionary<string, AugmentBase>>> _clientAugmentBinding;
 
         public static IDictionary<string, AugmentBase> ResolveAugment(ItemIndex item)
@@ -31,7 +31,7 @@ namespace Application
 
         public static bool IsActiveFor(ItemIndex itemIndex,
             string augmentName,
-            NetworkIdentity clientId)
+            NetworkInstanceId clientId)
         {
             var activeAugments = _clientAugmentBinding.SelectMany(x => x.Value.SelectMany(y => y.Value).Select(z=>z.Key));
             var augmentList = "";
@@ -46,13 +46,13 @@ namespace Application
                 out var augments) && augments.ContainsKey(augmentName);
         }
 
-        public static void TryAddAugment(NetworkIdentity id,
+        public static void TryAddAugment(NetworkInstanceId id,
             ItemIndex itemIndex,
             AugmentBase augmentBase)
         {
             if (_clientAugmentBinding == null)
                 _clientAugmentBinding =
-                    new ConcurrentDictionary<NetworkIdentity,
+                    new ConcurrentDictionary<NetworkInstanceId,
                         ConcurrentDictionary<ItemIndex, ConcurrentDictionary<string, AugmentBase>>>();
             if (_clientAugmentBinding.TryGetValue(id,
                 out var existingAugments))

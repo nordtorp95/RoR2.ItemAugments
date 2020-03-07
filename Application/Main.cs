@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Application.Services;
+﻿using Application.Services;
 using BepInEx;
 using RoR2;
 using UnityEngine;
@@ -13,13 +12,25 @@ namespace Application
     public class MyModName : BaseUnityPlugin
     {
 
+        public GameObject ModCanvas = null;
+
+        public bool showAugmentMenu = false;
+
         public void Awake()
         {
             On.RoR2.GenericPickupController.GrantItem += InventoryHook;
         }
-        
-        public void Update()
+
+        void OnGUI()
         {
+            if (showAugmentMenu)
+            {
+                GUILayout.Window(0, new Rect(50, 50, 500, 500), UI.AugmentsWindow.ShowWindow, "Augments");
+            }
+        }
+               
+        public void Update()
+        {            
             //This if statement checks if the player has currently pressed F2, and then proceeds into the statement:
             if (Input.GetKeyDown(KeyCode.F2))
             {
@@ -30,6 +41,7 @@ namespace Application
             
             if (Input.GetKeyDown(KeyCode.F3))
             {
+                showAugmentMenu = !showAugmentMenu;
                 var firstPlayer = PlayerCharacterMasterController.instances[0].master.netId;
                 var viewModel = AugmentShop.GetShopViewModel(firstPlayer);
                 Chat.AddMessage("Items in shop:");

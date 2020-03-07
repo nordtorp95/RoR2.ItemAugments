@@ -5,41 +5,17 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Reference Include="0Harmony, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\references\BepInEx\core\0Harmony.dll</HintPath>
-      </Reference>
       <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
         <HintPath>..\references\Assembly-CSharp.dll</HintPath>
       </Reference>
-      <Reference Include="Assembly-CSharp.R2API.mm, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\references\BepInEx\monomod\Assembly-CSharp.R2API.mm.dll</HintPath>
-      </Reference>
       <Reference Include="BepInEx, Version=5.0.0.0, Culture=neutral, PublicKeyToken=null">
         <HintPath>..\references\BepInEx\core\BepInEx.dll</HintPath>
-      </Reference>
-      <Reference Include="BepInEx.Harmony, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\references\BepInEx\core\BepInEx.Harmony.dll</HintPath>
-      </Reference>
-      <Reference Include="BepInEx.MonoMod.Loader, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\references\BepInEx\patchers\BepInEx.MonoMod.Loader\BepInEx.MonoMod.Loader.dll</HintPath>
-      </Reference>
-      <Reference Include="BepInEx.Preloader, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\references\BepInEx\core\BepInEx.Preloader.dll</HintPath>
       </Reference>
       <Reference Include="MMHOOK_Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
         <HintPath>..\references\BepInEx\plugins\R2API\MMHOOK_Assembly-CSharp.dll</HintPath>
       </Reference>
       <Reference Include="Mono.Cecil, Version=0.10.4.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e">
         <HintPath>..\references\BepInEx\core\Mono.Cecil.dll</HintPath>
-      </Reference>
-      <Reference Include="Mono.Cecil.Mdb, Version=0.10.4.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e">
-        <HintPath>..\references\BepInEx\core\Mono.Cecil.Mdb.dll</HintPath>
-      </Reference>
-      <Reference Include="Mono.Cecil.Pdb, Version=0.10.4.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e">
-        <HintPath>..\references\BepInEx\core\Mono.Cecil.Pdb.dll</HintPath>
-      </Reference>
-      <Reference Include="Mono.Cecil.Rocks, Version=0.10.4.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e">
-        <HintPath>..\references\BepInEx\core\Mono.Cecil.Rocks.dll</HintPath>
       </Reference>
       <Reference Include="MonoMod.RuntimeDetour, Version=19.11.5.1, Culture=neutral, PublicKeyToken=null">
         <HintPath>..\references\BepInEx\core\MonoMod.RuntimeDetour.dll</HintPath>
@@ -58,9 +34,6 @@
       </Reference>
       <Reference Include="UnityEngine.IMGUIModule">
         <HintPath>..\references\UnityEngine.IMGUIModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.IMGUIModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\..\..\Games\Steam\steamapps\common\Risk of Rain 2\Risk of Rain 2_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
       </Reference>
       <Reference Include="UnityEngine.Networking, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
         <HintPath>..\references\UnityEngine.Networking.dll</HintPath>

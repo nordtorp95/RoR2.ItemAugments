@@ -10,7 +10,6 @@ namespace Application.UI
     {
         private static NetworkUser firstNetworkUser;
         private static CharacterMaster firstPlayer;
-        private static Dictionary<ItemIndex, Dictionary<string, AugmentBase>> purchasable;
 
         public static void ShowWindow(int windowID)
         {

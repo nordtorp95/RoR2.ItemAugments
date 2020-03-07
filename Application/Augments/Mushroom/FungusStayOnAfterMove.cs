@@ -31,7 +31,7 @@ namespace Application.Augments.Mushroom
                 ilCursor.Remove();
                 ilCursor.EmitDelegate<Func<CharacterBody, bool>>((cb) =>
                 {
-                    if (!AugmentResolver.IsActiveFor(ItemIndex.Mushroom,
+                    if (!AugmentResolver.IsAugmentActiveForPlayer(ItemIndex.Mushroom,
                         nameof(FungusStayOnAfterMove),
                         cb.master.netId))
                     {

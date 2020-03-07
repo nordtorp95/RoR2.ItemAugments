@@ -61,9 +61,7 @@
       </Reference>
     </ItemGroup>
 
-  <Target Name="PostcompileScript" AfterTargets="Build" >
-    <Exec Command="BuildFiles\CopyToRoRFolder.bat"/>
+  <Target Name="PostcompileScript" AfterTargets="Build">
+    <Exec Command="BuildFiles\CopyToRoRFolder.bat" />
   </Target>
-
-
 </Project>

@@ -21,6 +21,9 @@
         <e p="Config" t="Include">
           <e p="ConfigResolver.cs" t="Include" />
         </e>
+        <e p="Domains" t="Include">
+          <e p="PlayerAugments.cs" t="Include" />
+        </e>
         <e p="Main.cs" t="Include" />
         <e p="obj" t="ExcludeRecursive">
           <e p="Debug" t="Include">
@@ -31,6 +34,7 @@
         </e>
         <e p="Services" t="Include">
           <e p="AugmentResolver.cs" t="Include" />
+          <e p="AugmentShop.cs" t="Include" />
         </e>
       </e>
       <e p="ItemsTalentTree.sln" t="IncludeFlat" />

@@ -27,6 +27,23 @@ namespace Application
                 var trans = PlayerCharacterMasterController.instances[0].master.GetBodyObject().transform;
                 PickupDropletController.CreatePickupDroplet(index, trans.position, trans.forward * 20f);
             }
+            
+            if (Input.GetKeyDown(KeyCode.F3))
+            {
+                var firstPlayer = PlayerCharacterMasterController.instances[0].master.netId;
+                var purchasable = AugmentShop.GetAvailableItems(firstPlayer);
+                var purchaseString = "Available augments: ";
+                foreach (var item in purchasable)
+                {
+                    var augmentString = "";
+                    foreach (var augment in item.Value)
+                    {
+                        augmentString += $", {augment.Value.Name}";
+                    }
+                    purchaseString += $"Item: {item.Key}, Augments: {augmentString}";
+                }
+                Chat.AddMessage(purchaseString);
+            }
         }
 
         private static void InventoryHook(On.RoR2.GenericPickupController.orig_GrantItem orig,
@@ -41,10 +58,10 @@ namespace Application
             var itemCount = inventory.GetItemCount(itemDef.itemIndex);
             if (itemCount >= Application.Config.ConfigResolver.ItemCount(itemDef.tier) - 1)
             {
-                var augments = AugmentResolver.ResolveAugment(itemDef.itemIndex);
-                AugmentResolver.TryAddAugment(networkIdentity,
-                    itemDef.itemIndex,
-                    augments.FirstOrDefault().Value);
+                var augments = AugmentResolver.ListAugmentsForItem(itemDef.itemIndex);
+                // AugmentResolver.TryAddAugmentToPlayer(networkIdentity,
+                //     itemDef.itemIndex,
+                //     augments.FirstOrDefault().Value);
             }
 
             orig(self,

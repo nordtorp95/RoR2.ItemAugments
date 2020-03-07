@@ -1,7 +1,9 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using Application.Augments;
 using Application.Augments.Mushroom;
+using Application.Domains;
 using RoR2;
 using UnityEngine.Networking;
 
@@ -9,54 +11,98 @@ namespace Application.Services
 {
     public class AugmentResolver
     {
-        private static IDictionary<ItemIndex, IDictionary<string, AugmentBase>> _availableAugments;
-
-        private static
-            ConcurrentDictionary<NetworkInstanceId,
-                ConcurrentDictionary<ItemIndex, ConcurrentDictionary<string, AugmentBase>>> _clientAugmentBinding;
-
-        public static IDictionary<string, AugmentBase> ResolveAugment(ItemIndex item)
+        //todo automate registration
+        private static readonly IDictionary<ItemIndex, IDictionary<string, AugmentBase>> AvailableAugments = new Dictionary<ItemIndex, IDictionary<string, AugmentBase>>
         {
-            if (_availableAugments == null) InitiateAugments();
+            {ItemIndex.Mushroom, new Dictionary<string, AugmentBase>{{nameof(FungusStayOnAfterMove), new FungusStayOnAfterMove()}}}
+        };
 
-            if (_availableAugments != null && _availableAugments.TryGetValue(item,
-                out var augments))
-            {
-                return augments;
-            }
+        private static readonly ConcurrentDictionary<NetworkInstanceId, PlayerAugments> ClientAugmentBinding =
+            new ConcurrentDictionary<NetworkInstanceId, PlayerAugments>();
 
-            return new Dictionary<string, AugmentBase>();
+        public static IDictionary<string, AugmentBase> ListAugmentsForItem(ItemIndex item)
+        {
+            return AvailableAugments.TryGetValue(item,
+                out var augments)
+                ? augments
+                : new Dictionary<string, AugmentBase>();
         }
 
-        public static bool IsActiveFor(ItemIndex itemIndex,
+        public static PlayerAugments GetActiveAugmentsForPlayer(
+            NetworkInstanceId clientId)
+        {
+            return ClientAugmentBinding.TryGetValue(clientId,
+                out var augments) ? augments : new PlayerAugments(clientId);
+        }
+        
+        public static IDictionary<ItemIndex, Dictionary<string, AugmentBase>> GetAvailableAugmentsForPlayer(
+            NetworkInstanceId clientId)
+        {
+            //Get existing augments or empty list
+            if (!ClientAugmentBinding.TryGetValue(clientId,
+                out var playerAugments))
+            {
+                playerAugments = new PlayerAugments(clientId);
+            }
+
+            var available = new Dictionary<ItemIndex, Dictionary<string, AugmentBase>>();
+
+            //Check for all availableAugments
+            foreach (var (key, value) in AvailableAugments)
+            {
+                //If player already has augment for item, filter out the existing ones
+                if (playerAugments.Augments.TryGetValue(key,
+                    out var existingAugment))
+                {
+                    //Get values that does not already exist on the players list of augments
+                    var availableValues = value.Where(x => !existingAugment.ContainsKey(x.Key))
+                        .ToDictionary(x => x.Key,
+                            x => x.Value);
+
+                    //If any augments after filter, add them to result
+                    if (availableValues.Any())
+                    {
+                        available.Add(key,
+                            availableValues);
+                    }
+                }
+                //Player has no augments for item, add all available
+                else
+                {
+                    available.Add(key,
+                        value.ToDictionary(x => x.Key,
+                            x => x.Value));
+                }
+            }
+
+            return available;
+        }
+
+        public static bool IsAugmentActiveForPlayer(ItemIndex itemIndex,
             string augmentName,
             NetworkInstanceId clientId)
         {
-            if (!_clientAugmentBinding.TryGetValue(clientId,
+            if (!ClientAugmentBinding.TryGetValue(clientId,
                 out var items)) return false;
-            return items.TryGetValue(itemIndex,
+            return items.Augments.TryGetValue(itemIndex,
                 out var augments) && augments.ContainsKey(augmentName);
         }
 
-        public static void TryAddAugment(NetworkInstanceId id,
+        public static void TryAddAugmentToPlayer(NetworkInstanceId id,
             ItemIndex itemIndex,
             AugmentBase augmentBase)
         {
-            if (_clientAugmentBinding == null)
-                _clientAugmentBinding =
-                    new ConcurrentDictionary<NetworkInstanceId,
-                        ConcurrentDictionary<ItemIndex, ConcurrentDictionary<string, AugmentBase>>>();
-            if (_clientAugmentBinding.TryGetValue(id,
+            if (ClientAugmentBinding.TryGetValue(id,
                 out var existingAugments))
             {
-                if (existingAugments.TryGetValue(itemIndex,
+                if (existingAugments.Augments.TryGetValue(itemIndex,
                     out var existingItemAugments))
                 {
                     CreateLowestLevelDic(existingItemAugments);
                 }
                 else
                 {
-                    existingAugments.TryAdd(itemIndex,
+                    existingAugments.Augments.TryAdd(itemIndex,
                         CreateLowestLevelDic());
                 }
             }
@@ -66,8 +112,9 @@ namespace Application.Services
                 var lowestLevel = CreateLowestLevelDic();
                 newDic.TryAdd(itemIndex,
                     lowestLevel);
-                _clientAugmentBinding.TryAdd(id,
-                    newDic);
+                ClientAugmentBinding.TryAdd(id,
+                    new PlayerAugments(id,
+                        newDic));
             }
 
             ConcurrentDictionary<string, AugmentBase> CreateLowestLevelDic(
@@ -81,50 +128,6 @@ namespace Application.Services
                 }
 
                 return existingDic;
-            }
-        }
-
-        private static void InitiateAugments()
-        {
-            _availableAugments = new Dictionary<ItemIndex, IDictionary<string, AugmentBase>>();
-
-            var fungus = new FungusStayOnAfterMove();
-            _availableAugments.Add(ItemIndex.Mushroom,
-                new Dictionary<string, AugmentBase>
-                {
-                    {fungus.Name, fungus}
-                });
-
-            //Todo get this to work 
-            // foreach (var type in
-            //     Assembly.GetExecutingAssembly().GetTypes()
-            //         .Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(AugmentBase))))
-            // {
-            //     var createdObject = Activator.CreateInstance(type);
-            //
-            //     if (createdObject is AugmentBase augment)
-            //     {
-            //         AddAugment(augment);
-            //     }
-            // }
-        }
-
-        private static void AddAugment(AugmentBase augment)
-        {
-            if (_availableAugments.TryGetValue(augment.ItemType,
-                out var existingAugments))
-            {
-                if (!existingAugments.ContainsKey(augment.Name))
-                {
-                    existingAugments.Add(augment.Name,
-                        augment);
-                }
-            }
-            else
-            {
-                var newDic = new Dictionary<string, AugmentBase> {{augment.Name, augment}};
-                _availableAugments.TryAdd(augment.ItemType,
-                    newDic);
             }
         }
     }

@@ -1,7 +1,6 @@
 ﻿using RoR2;
-using UnityEngine.Networking;
 
-namespace Application.DomainModels
+namespace Application.Augments
 {
     public abstract class AugmentBase
     {

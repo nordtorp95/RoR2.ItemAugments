@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
-using Application.DomainModels;
+using Application.Services;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using R2API.Utils;
 using RoR2;
 using UnityEngine;
 
-namespace Application.Augments
+namespace Application.Augments.Mushroom
 {
     public class FungusStayOnAfterMove : AugmentBase
     {

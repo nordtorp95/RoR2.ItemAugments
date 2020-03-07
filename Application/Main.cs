@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Application.Services;
 using BepInEx;
 using RoR2;
 using UnityEngine;
@@ -38,7 +39,7 @@ namespace Application
             var itemDef = ItemCatalog.GetItemDef(item.itemIndex);
 
             var itemCount = inventory.GetItemCount(itemDef.itemIndex);
-            if (itemCount >= Application.Config.ItemCount(itemDef.tier) - 1)
+            if (itemCount >= Application.Config.ConfigResolver.ItemCount(itemDef.tier) - 1)
             {
                 var augments = AugmentResolver.ResolveAugment(itemDef.itemIndex);
                 AugmentResolver.TryAddAugment(networkIdentity,

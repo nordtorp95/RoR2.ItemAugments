@@ -1,8 +1,8 @@
 ﻿using RoR2;
 
-namespace Application
+namespace Application.Config
 {
-    public static class Config
+    public static class ConfigResolver
     {
         public static int ItemCount(ItemTier tier)
         {

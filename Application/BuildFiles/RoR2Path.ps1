@@ -1,0 +1,1 @@
+$root = "F:\Games\Steam\steamapps\common\Risk of Rain 2\"

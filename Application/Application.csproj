@@ -61,9 +61,8 @@
       </Reference>
     </ItemGroup>
 
-
-  <Target Name="AfterBuild">
-    <Copy SourceFiles="obj\debug\netstandard2.1\application.dll" DestinationFolder="$(OutDir)" />
+  <Target Name="PostcompileScript" AfterTargets="Build" >
+    <Exec Command="BuildFiles\CopyToRoRFolder.bat"/>
   </Target>
 
 

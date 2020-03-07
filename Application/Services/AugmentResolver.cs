@@ -1,11 +1,11 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Application.Augments;
-using Application.DomainModels;
+using Application.Augments.Mushroom;
 using RoR2;
 using UnityEngine.Networking;
 
-namespace Application
+namespace Application.Services
 {
     public class AugmentResolver
     {

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\Users\Nordt\.Rider2019.3\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\Nordt\.Rider2019.3\system\resharper-host\local\Transient\ReSharperHost\v193\SolutionCaches\_ItemsTalentTree.-260866345.00" t="ExcludeRecursive" />
+    <e p="F:\Programs\Rider\Projects\ItemsTalentTree" t="IncludeFlat">
+      <e p="Application" t="IncludeRecursive">
+        <e p="Application.csproj" t="IncludeRecursive" />
+        <e p="AugmentResolver.cs" t="Include" />
+        <e p="Augments" t="Include">
+          <e p="FungusStayOnAfterMove.cs" t="Include" />
+        </e>
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="Config.cs" t="Include" />
+        <e p="DomainModels" t="Include">
+          <e p="AugmentBase.cs" t="Include" />
+        </e>
+        <e p="Main.cs" t="Include" />
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netstandard2.1" t="Include">
+              <e p="Application.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+      </e>
+      <e p="ItemsTalentTree.sln" t="IncludeFlat" />
+      <e p="packages" t="ExcludeRecursive" />
+    </e>
+  </component>
+</project>

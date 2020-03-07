@@ -1,6 +1,5 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using Application.Augments;
 using Application.Augments.Mushroom;
 using Application.Domains;
@@ -34,50 +33,6 @@ namespace Application.Services
             return ClientAugmentBinding.TryGetValue(clientId,
                 out var augments) ? augments : new PlayerAugments(clientId);
         }
-        
-        
-        public static IDictionary<ItemIndex, Dictionary<AugmentId, AugmentBase>> GetAvailableAugmentsForPlayer(
-            NetworkInstanceId clientId)
-        {
-            //Get existing augments or empty list
-            if (!ClientAugmentBinding.TryGetValue(clientId,
-                out var playerAugments))
-            {
-                playerAugments = new PlayerAugments(clientId);
-            }
-
-            var available = new Dictionary<ItemIndex, Dictionary<AugmentId, AugmentBase>>();
-
-            //Check for all availableAugments
-            foreach (var (key, value) in AllAvailableAugments)
-            {
-                //If player already has augment for item, filter out the existing ones
-                if (playerAugments.Augments.TryGetValue(key,
-                    out var existingAugment))
-                {
-                    //Get values that does not already exist on the players list of augments
-                    var availableValues = value.Where(x => !existingAugment.ContainsKey(x.Key))
-                        .ToDictionary(x => x.Key,
-                            x => x.Value);
-
-                    //If any augments after filter, add them to result
-                    if (availableValues.Any())
-                    {
-                        available.Add(key,
-                            availableValues);
-                    }
-                }
-                //Player has no augments for item, add all available
-                else
-                {
-                    available.Add(key,
-                        value.ToDictionary(x => x.Key,
-                            x => x.Value));
-                }
-            }
-
-            return available;
-        }
 
         public static bool IsAugmentActiveForPlayer(ItemIndex itemIndex,
             AugmentId augmentId,
@@ -89,46 +44,70 @@ namespace Application.Services
                 out var augments) && augments.ContainsKey(augmentId);
         }
 
-        public static void TryAddAugmentToPlayer(NetworkInstanceId id,
+        public static bool TryAddAugmentToPlayer(NetworkInstanceId id,
             ItemIndex itemIndex,
-            AugmentBase augmentBase)
+            AugmentId augmentId)
         {
-            if (ClientAugmentBinding.TryGetValue(id,
-                out var existingAugments))
+            if (!AllAvailableAugments.TryGetValue(itemIndex,
+                out var availableAugments) || !availableAugments.TryGetValue(augmentId,
+                out var augmentToAdd))
             {
-                if (existingAugments.Augments.TryGetValue(itemIndex,
-                    out var existingItemAugments))
+                return false;
+            }
+
+            var (getAugmentsSuccess, augmentList) = GetAugments();
+            if (!getAugmentsSuccess) return false;
+
+            //If list contains augments for item
+            if (augmentList.Augments.TryGetValue(itemIndex,
+                out var existingItemAugments))
+            {
+                //If player already has augment, or if it couldnt be added
+                if (existingItemAugments.ContainsKey(augmentId) || !existingItemAugments.TryAdd(augmentId,augmentToAdd))
                 {
-                    CreateLowestLevelDic(existingItemAugments);
-                }
-                else
-                {
-                    existingAugments.Augments.TryAdd(itemIndex,
-                        CreateLowestLevelDic());
+                    return false;
                 }
             }
+            //Player does not have any augments for item
             else
             {
-                var newDic = new ConcurrentDictionary<ItemIndex, ConcurrentDictionary<AugmentId, AugmentBase>>();
-                var lowestLevel = CreateLowestLevelDic();
-                newDic.TryAdd(itemIndex,
-                    lowestLevel);
-                ClientAugmentBinding.TryAdd(id,
-                    new PlayerAugments(id,
-                        newDic));
-            }
-
-            ConcurrentDictionary<AugmentId, AugmentBase> CreateLowestLevelDic(
-                ConcurrentDictionary<AugmentId, AugmentBase> existingDic = null)
-            {
-                if (existingDic == null) existingDic = new ConcurrentDictionary<AugmentId, AugmentBase>();
-                if (existingDic.TryAdd(new AugmentId(augmentBase.GetType().Name), 
-                    augmentBase))
+                //Create new dictionary of augments for item
+                var newAugmentDictionary = new ConcurrentDictionary<AugmentId, AugmentBase>();
+                if (!newAugmentDictionary.TryAdd(augmentId,
+                    augmentToAdd))
                 {
-                    augmentBase.Activate();
+                    return false;
                 }
 
-                return existingDic;
+                if (!augmentList.Augments.TryAdd(itemIndex,
+                    newAugmentDictionary))
+                {
+                    return false;
+                }
+            }
+
+            augmentToAdd.Activate();
+            return true;
+
+            (bool succes, PlayerAugments existingAugments) GetAugments()
+            {
+                //If client does not have any augments, add a new list.
+                if (!ClientAugmentBinding.ContainsKey(id))
+                {
+                    if (!ClientAugmentBinding.TryAdd(id,
+                        new PlayerAugments(id)))
+                    {
+                        return (false,null);
+                    };
+                }
+                //Try get the existing or newly added list.
+                if (!ClientAugmentBinding.TryGetValue(id,
+                    out var existingAugments))
+                {
+                    return (false,null);
+                }
+
+                return (true, existingAugments);
             }
         }
     }

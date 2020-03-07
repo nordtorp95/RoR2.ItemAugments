@@ -62,4 +62,9 @@
     </ItemGroup>
 
 
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="obj\debug\netstandard2.1\application.dll" DestinationFolder="$(OutDir)" />
+  </Target>
+
+
 </Project>

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
@@ -56,8 +56,17 @@
       <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
         <HintPath>..\references\UnityEngine.CoreModule.dll</HintPath>
       </Reference>
+      <Reference Include="UnityEngine.IMGUIModule">
+        <HintPath>..\references\UnityEngine.IMGUIModule.dll</HintPath>
+      </Reference>
       <Reference Include="UnityEngine.Networking, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
         <HintPath>..\references\UnityEngine.Networking.dll</HintPath>
+      </Reference>
+      <Reference Include="UnityEngine.UI">
+        <HintPath>..\references\UnityEngine.UI.dll</HintPath>
+      </Reference>
+      <Reference Include="UnityEngine.UIModule">
+        <HintPath>..\references\UnityEngine.UIModule.dll</HintPath>
       </Reference>
     </ItemGroup>
 

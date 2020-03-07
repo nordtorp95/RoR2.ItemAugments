@@ -14,26 +14,30 @@ namespace Application.UI
 
         public static void ShowWindow(int windowID)
         {
-            GUILayout.BeginHorizontal();
-
             firstNetworkUser = PlayerCharacterMasterController.instances[0].networkUser;
             firstPlayer = PlayerCharacterMasterController.instances[0].master;
-            purchasable = AugmentShop.GetAvailableItems(firstPlayer.netId);
+            var viewModel = AugmentShop.GetShopViewModel(firstPlayer.netId);
+            
+            GUILayout.BeginHorizontal();
 
-            foreach (var item in purchasable)
+            foreach (var item in viewModel.Items)
             {
-                foreach (var augment in item.Value)
-                {
-                    var itemDef = ItemCatalog.GetItemDef(item.Key);
-                    if (GUILayout.Button(new GUIContent(itemDef.name, itemDef.pickupIconTexture)))
+                var itemDef = ItemCatalog.GetItemDef(item.ItemIndex);
+
+                GUILayout.Label($"Item name: {itemDef.name}, Points to spend: {item.PointsToSpend}");
+
+                foreach (var augment in item.Augments)
+                {                   
+                    if (GUILayout.Button(new GUIContent(augment.Augment.Name, itemDef.pickupIconTexture)))
                     {
-                        AugmentResolver.TryAddAugmentToPlayer(firstPlayer.netId, itemDef.itemIndex, augment.Value);
-                        Chat.AddMessage($"{firstNetworkUser.userName} unlocked augment {augment.Value.Name}");
+                        AugmentResolver.TryAddAugmentToPlayer(firstPlayer.netId, itemDef.itemIndex, augment.Augment);
+                        Chat.AddMessage($"{firstNetworkUser.userName} unlocked augment {augment.Augment.Name}");
                     }
                 }
             }
 
             GUILayout.EndHorizontal();
+
         }
     }
 }

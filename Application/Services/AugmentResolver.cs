@@ -12,20 +12,20 @@ namespace Application.Services
     public class AugmentResolver
     {
         //todo automate registration
-        private static readonly IDictionary<ItemIndex, IDictionary<string, AugmentBase>> AvailableAugments = new Dictionary<ItemIndex, IDictionary<string, AugmentBase>>
+        public static readonly IDictionary<ItemIndex, IDictionary<AugmentId, AugmentBase>> AllAvailableAugments = new Dictionary<ItemIndex, IDictionary<AugmentId, AugmentBase>>
         {
-            {ItemIndex.Mushroom, new Dictionary<string, AugmentBase>{{nameof(FungusStayOnAfterMove), new FungusStayOnAfterMove()}}}
+            {ItemIndex.Mushroom, new Dictionary<AugmentId, AugmentBase>{{new AugmentId(nameof(FungusStayOnAfterMove)), new FungusStayOnAfterMove()}}}
         };
 
         private static readonly ConcurrentDictionary<NetworkInstanceId, PlayerAugments> ClientAugmentBinding =
             new ConcurrentDictionary<NetworkInstanceId, PlayerAugments>();
 
-        public static IDictionary<string, AugmentBase> ListAugmentsForItem(ItemIndex item)
+        public static IDictionary<AugmentId, AugmentBase> ListAugmentsForItem(ItemIndex item)
         {
-            return AvailableAugments.TryGetValue(item,
+            return AllAvailableAugments.TryGetValue(item,
                 out var augments)
                 ? augments
-                : new Dictionary<string, AugmentBase>();
+                : new Dictionary<AugmentId, AugmentBase>();
         }
 
         public static PlayerAugments GetActiveAugmentsForPlayer(
@@ -35,7 +35,8 @@ namespace Application.Services
                 out var augments) ? augments : new PlayerAugments(clientId);
         }
         
-        public static IDictionary<ItemIndex, Dictionary<string, AugmentBase>> GetAvailableAugmentsForPlayer(
+        
+        public static IDictionary<ItemIndex, Dictionary<AugmentId, AugmentBase>> GetAvailableAugmentsForPlayer(
             NetworkInstanceId clientId)
         {
             //Get existing augments or empty list
@@ -45,10 +46,10 @@ namespace Application.Services
                 playerAugments = new PlayerAugments(clientId);
             }
 
-            var available = new Dictionary<ItemIndex, Dictionary<string, AugmentBase>>();
+            var available = new Dictionary<ItemIndex, Dictionary<AugmentId, AugmentBase>>();
 
             //Check for all availableAugments
-            foreach (var (key, value) in AvailableAugments)
+            foreach (var (key, value) in AllAvailableAugments)
             {
                 //If player already has augment for item, filter out the existing ones
                 if (playerAugments.Augments.TryGetValue(key,
@@ -79,13 +80,13 @@ namespace Application.Services
         }
 
         public static bool IsAugmentActiveForPlayer(ItemIndex itemIndex,
-            string augmentName,
+            AugmentId augmentId,
             NetworkInstanceId clientId)
         {
             if (!ClientAugmentBinding.TryGetValue(clientId,
                 out var items)) return false;
             return items.Augments.TryGetValue(itemIndex,
-                out var augments) && augments.ContainsKey(augmentName);
+                out var augments) && augments.ContainsKey(augmentId);
         }
 
         public static void TryAddAugmentToPlayer(NetworkInstanceId id,
@@ -108,7 +109,7 @@ namespace Application.Services
             }
             else
             {
-                var newDic = new ConcurrentDictionary<ItemIndex, ConcurrentDictionary<string, AugmentBase>>();
+                var newDic = new ConcurrentDictionary<ItemIndex, ConcurrentDictionary<AugmentId, AugmentBase>>();
                 var lowestLevel = CreateLowestLevelDic();
                 newDic.TryAdd(itemIndex,
                     lowestLevel);
@@ -117,11 +118,11 @@ namespace Application.Services
                         newDic));
             }
 
-            ConcurrentDictionary<string, AugmentBase> CreateLowestLevelDic(
-                ConcurrentDictionary<string, AugmentBase> existingDic = null)
+            ConcurrentDictionary<AugmentId, AugmentBase> CreateLowestLevelDic(
+                ConcurrentDictionary<AugmentId, AugmentBase> existingDic = null)
             {
-                if (existingDic == null) existingDic = new ConcurrentDictionary<string, AugmentBase>();
-                if (existingDic.TryAdd(augmentBase.GetType().Name,
+                if (existingDic == null) existingDic = new ConcurrentDictionary<AugmentId, AugmentBase>();
+                if (existingDic.TryAdd(new AugmentId(augmentBase.GetType().Name), 
                     augmentBase))
                 {
                     augmentBase.Activate();

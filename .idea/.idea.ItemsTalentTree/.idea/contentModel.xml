@@ -8,6 +8,7 @@
         <e p="Application.csproj" t="IncludeRecursive" />
         <e p="Augments" t="Include">
           <e p="AugmentBase.cs" t="Include" />
+          <e p="AugmentId.cs" t="Include" />
           <e p="Mushroom" t="Include">
             <e p="FungusStayOnAfterMove.cs" t="Include" />
           </e>
@@ -23,6 +24,11 @@
         </e>
         <e p="Domains" t="Include">
           <e p="PlayerAugments.cs" t="Include" />
+          <e p="Shop" t="Include">
+            <e p="AugmentViewModel.cs" t="Include" />
+            <e p="ShopItemViewModel.cs" t="Include" />
+            <e p="ShopViewModel.cs" t="Include" />
+          </e>
         </e>
         <e p="Main.cs" t="Include" />
         <e p="obj" t="ExcludeRecursive">

@@ -8,7 +8,7 @@ namespace Application.Domains
     public class PlayerAugments
     {
         public PlayerAugments(NetworkInstanceId clientId,
-            ConcurrentDictionary<ItemIndex, ConcurrentDictionary<string, AugmentBase>> augments)
+            ConcurrentDictionary<ItemIndex, ConcurrentDictionary<AugmentId, AugmentBase>> augments)
         {
             ClientId = clientId;
             Augments = augments;
@@ -17,10 +17,10 @@ namespace Application.Domains
         public PlayerAugments(NetworkInstanceId clientId)
         {
             ClientId = clientId;
-            Augments = new ConcurrentDictionary<ItemIndex, ConcurrentDictionary<string, AugmentBase>>();
+            Augments = new ConcurrentDictionary<ItemIndex, ConcurrentDictionary<AugmentId, AugmentBase>>();
         }
 
         public NetworkInstanceId ClientId { get;  }
-        public ConcurrentDictionary<ItemIndex,ConcurrentDictionary<string,AugmentBase>> Augments { get;  }
+        public ConcurrentDictionary<ItemIndex,ConcurrentDictionary<AugmentId,AugmentBase>> Augments { get;  }
     }
 }

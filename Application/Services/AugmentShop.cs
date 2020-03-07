@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using Application.Augments;
 using Application.Config;
+using Application.Domains.Shop;
 using RoR2;
 using UnityEngine.Networking;
 
@@ -9,34 +11,36 @@ namespace Application.Services
 {
     public static class AugmentShop
     {
-        public static Dictionary<ItemIndex,Dictionary<string,AugmentBase>> GetAvailableItems(NetworkInstanceId clientId)
+        public static ShopViewModel GetShopViewModel(NetworkInstanceId clientId)
         {
             var player = PlayerCharacterMasterController.instances.First(x => x.master.netId == clientId);
-            var availableAugments = AugmentResolver.GetAvailableAugmentsForPlayer(clientId);
-            var activeAugments = AugmentResolver.GetActiveAugmentsForPlayer(clientId);
-            var purchasable = new Dictionary<ItemIndex,Dictionary<string,AugmentBase>>();
-            
-            //For all available, make sure that player meets item cost
-            foreach (var (key, augmentList) in availableAugments)
+            var allItems = AugmentResolver.AllAvailableAugments;
+            var activeForPlayer = AugmentResolver.GetActiveAugmentsForPlayer(clientId);
+            var viewModels = new List<ShopItemViewModel>();
+
+            foreach (var item in allItems)
             {
-                var itemCount = player.master.inventory.GetItemCount(key);
-                
-                var itemTier = ItemCatalog.GetItemDef(key).tier;
+                if (!activeForPlayer.Augments.TryGetValue(item.Key, out var existingAugments))
+                {
+                    existingAugments = new ConcurrentDictionary<AugmentId, AugmentBase>();
+                }
+                var itemCount = player.master.inventory.GetItemCount(item.Key);
+                var itemTier = ItemCatalog.GetItemDef(item.Key).tier;
                 var itemCost = ConfigResolver.ItemCount(itemTier);
 
-                //If player has active augments for item, multiply cost
-                if (activeAugments.Augments.TryGetValue(key,
-                    out var activeList))
-                {
-                    itemCost *= (activeList.Count + 1);
-                }
+                var pointsToSpend = itemCount / (itemCost * (existingAugments.Count + 1));
                 
-                if (itemCount >= itemCost)
+                var augmentViewModels = new List<AugmentViewModel>();
+                foreach (var augment in item.Value)
                 {
-                    purchasable.Add(key,augmentList);
+                    var active = existingAugments.ContainsKey(augment.Key);
+                    var purchasable = pointsToSpend > 0;
+                    var viewModel = new AugmentViewModel(augment.Value,active,purchasable);
+                    augmentViewModels.Add(viewModel);
                 }
+                viewModels.Add(new ShopItemViewModel(item.Key,augmentViewModels,pointsToSpend));
             }
-            return purchasable;
+            return new ShopViewModel(viewModels);
         }
     }
 }

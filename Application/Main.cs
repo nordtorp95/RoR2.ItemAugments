@@ -42,6 +42,18 @@ namespace Application
             if (Input.GetKeyDown(KeyCode.F3))
             {
                 showAugmentMenu = !showAugmentMenu;
+                var firstPlayer = PlayerCharacterMasterController.instances[0].master.netId;
+                var viewModel = AugmentShop.GetShopViewModel(firstPlayer);
+                Chat.AddMessage("Items in shop:");
+                foreach (var item in viewModel.Items)
+                {
+                    Chat.AddMessage($"Item name: {item.ItemIndex}, Points to spend: {item.PointsToSpend}");
+                    foreach (var augment in item.Augments)
+                    {
+                        Chat.AddMessage($"- AugmentName: {augment.Augment.Name}, Active: {augment.Active}, Available: {augment.Purchasable}");
+                    }
+                    Chat.AddMessage("------");
+                }
             }
         }
 

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using Application.Augments;
 using Application.DomainModels;
 using RoR2;
@@ -33,13 +32,6 @@ namespace Application
             string augmentName,
             NetworkInstanceId clientId)
         {
-            var activeAugments = _clientAugmentBinding.SelectMany(x => x.Value.SelectMany(y => y.Value).Select(z=>z.Key));
-            var augmentList = "";
-            foreach (var augment in activeAugments)
-            {
-                augmentList += $", {augment}";
-            }
-            Chat.AddMessage($"Augments: {augmentList}");
             if (!_clientAugmentBinding.TryGetValue(clientId,
                 out var items)) return false;
             return items.TryGetValue(itemIndex,
@@ -82,7 +74,7 @@ namespace Application
                 ConcurrentDictionary<string, AugmentBase> existingDic = null)
             {
                 if (existingDic == null) existingDic = new ConcurrentDictionary<string, AugmentBase>();
-                if (existingDic.TryAdd(augmentBase.Name,
+                if (existingDic.TryAdd(augmentBase.GetType().Name,
                     augmentBase))
                 {
                     augmentBase.Activate();

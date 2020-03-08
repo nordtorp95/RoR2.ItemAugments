@@ -1,4 +1,5 @@
-﻿using Application.Services;
+﻿using System.Linq;
+using Application.Services;
 using BepInEx;
 using RoR2;
 using UnityEngine;
@@ -55,6 +56,30 @@ namespace Application
                     Chat.AddMessage("------");
                 }
             }
+            
+            if (Input.GetKeyDown(KeyCode.F4))
+            {
+                var trans = PlayerCharacterMasterController.instances[0].master.GetBodyObject().transform;
+                
+                var index = PickupCatalog.FindPickupIndex(ItemIndex.TreasureCache);
+                PickupDropletController.CreatePickupDroplet(index, trans.position, trans.forward * 20f);
+
+                Xoroshiro128Plus xoroshiro128Plus = new Xoroshiro128Plus((ulong)12);
+                GameObject gameObject3 = DirectorCore.instance.TrySpawnObject(new DirectorSpawnRequest(Resources.Load<SpawnCard>("SpawnCards/InteractableSpawnCard/iscLockbox"), new DirectorPlacementRule
+                {
+                    placementMode = DirectorPlacementRule.PlacementMode.Direct,
+                    position = trans.position,
+                }, xoroshiro128Plus));
+                if (gameObject3)
+                {
+                    // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
+                    ChestBehavior component5 = gameObject3.GetComponent<ChestBehavior>();
+                    if (component5)
+                    {
+                        component5.tier3Chance *= Mathf.Pow((float)10, 2f);
+                    }
+                }
+            }
         }
 
         private static void InventoryHook(On.RoR2.GenericPickupController.orig_GrantItem orig,
@@ -70,9 +95,9 @@ namespace Application
             if (itemCount >= Application.Config.ConfigResolver.ItemCount(itemDef.tier) - 1)
             {
                 var augments = AugmentResolver.ListAugmentsForItem(itemDef.itemIndex);
-                // AugmentResolver.TryAddAugmentToPlayer(networkIdentity,
-                //     itemDef.itemIndex,
-                //     augments.FirstOrDefault().Value);
+                AugmentResolver.TryAddAugmentToPlayer(networkIdentity,
+                    itemDef.itemIndex,
+                    augments.FirstOrDefault().Value.Id);
             }
 
             orig(self,

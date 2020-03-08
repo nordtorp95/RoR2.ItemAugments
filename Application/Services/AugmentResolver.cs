@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Application.Augments;
 using Application.Augments.Mushroom;
+using Application.Augments.RustyKey;
 using Application.Domains;
 using RoR2;
 using UnityEngine.Networking;
@@ -13,7 +14,14 @@ namespace Application.Services
         //todo automate registration
         public static readonly IDictionary<ItemIndex, IDictionary<AugmentId, AugmentBase>> AllAvailableAugments = new Dictionary<ItemIndex, IDictionary<AugmentId, AugmentBase>>
         {
-            {ItemIndex.Mushroom, new Dictionary<AugmentId, AugmentBase>{{new AugmentId(nameof(FungusStayOnAfterMove)), new FungusStayOnAfterMove()}}}
+            {ItemIndex.Mushroom, new Dictionary<AugmentId, AugmentBase>
+            {
+                {new AugmentId(nameof(FungusStayOnAfterMove)), new FungusStayOnAfterMove()}
+            }},
+            {ItemIndex.TreasureCache, new Dictionary<AugmentId, AugmentBase>
+            {
+                {new AugmentId(nameof(ChestTurnsRed)), new ChestTurnsRed()}
+            }}
         };
 
         private static readonly ConcurrentDictionary<NetworkInstanceId, PlayerAugments> ClientAugmentBinding =

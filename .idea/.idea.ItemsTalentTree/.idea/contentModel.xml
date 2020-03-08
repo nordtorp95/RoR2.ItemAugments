@@ -12,6 +12,11 @@
           <e p="Mushroom" t="Include">
             <e p="FungusStayOnAfterMove.cs" t="Include" />
           </e>
+          <e p="RustyKey" t="Include">
+            <e p="AdditionalChestSpawn.cs" t="Include" />
+            <e p="BoxSizeScaling.cs" t="Include" />
+            <e p="ChestTurnsRed.cs" t="Include" />
+          </e>
         </e>
         <e p="bin" t="ExcludeRecursive" />
         <e p="BuildFiles" t="Include">

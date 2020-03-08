@@ -27,10 +27,10 @@ namespace Application.UI
 
                 foreach (var augment in item.Augments)
                 {                   
-                    if (GUILayout.Button(new GUIContent(augment.Augment.Name, itemDef.pickupIconTexture)))
+                    if (GUILayout.Button(new GUIContent(augment.Name, itemDef.pickupIconTexture)))
                     {
-                        AugmentResolver.TryAddAugmentToPlayer(firstPlayer.netId, itemDef.itemIndex, augment.Augment.Id);
-                        Chat.AddMessage($"{firstNetworkUser.userName} unlocked augment {augment.Augment.Name}");
+                        AugmentResolver.TryAddOrUpgradeAugmentToPlayer(firstPlayer.netId, itemDef.itemIndex, augment.AugmentId);
+                        Chat.AddMessage($"{firstNetworkUser.userName} unlocked augment {augment.Name}");
                     }
                 }
             }

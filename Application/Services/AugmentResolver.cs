@@ -20,7 +20,8 @@ namespace Application.Services
             }},
             {ItemIndex.TreasureCache, new Dictionary<AugmentId, AugmentBase>
             {
-                {new AugmentId(nameof(ChestTurnsRed)), new ChestTurnsRed()}
+                //{new AugmentId(nameof(ChestTurnsRed)), new ChestTurnsRed()},
+                {new AugmentId(nameof(BoxSizeScaling)), new BoxSizeScaling()}
             }}
         };
 
@@ -52,7 +53,7 @@ namespace Application.Services
                 out var augments) && augments.ContainsKey(augmentId);
         }
 
-        public static bool TryAddAugmentToPlayer(NetworkInstanceId id,
+        public static bool TryAddOrUpgradeAugmentToPlayer(NetworkInstanceId id,
             ItemIndex itemIndex,
             AugmentId augmentId)
         {
@@ -66,12 +67,14 @@ namespace Application.Services
             var (getAugmentsSuccess, augmentList) = GetAugments();
             if (!getAugmentsSuccess) return false;
 
+            var existsAlready = false;
             //If list contains augments for item
             if (augmentList.Augments.TryGetValue(itemIndex,
                 out var existingItemAugments))
             {
                 //If player already has augment, or if it couldnt be added
-                if (existingItemAugments.ContainsKey(augmentId) || !existingItemAugments.TryAdd(augmentId,augmentToAdd))
+                existsAlready = existingItemAugments.ContainsKey(augmentId);
+                if (!existsAlready && !existingItemAugments.TryAdd(augmentId,augmentToAdd))
                 {
                     return false;
                 }
@@ -94,7 +97,11 @@ namespace Application.Services
                 }
             }
 
+            Chat.AddMessage($"Exists: {existsAlready}");
+            if (existsAlready) return augmentToAdd.TryLevelUp(id);
+            Chat.AddMessage($"Activate {augmentToAdd.Name}");
             augmentToAdd.Activate();
+            augmentToAdd.TryLevelUp(id);
             return true;
 
             (bool succes, PlayerAugments existingAugments) GetAugments()

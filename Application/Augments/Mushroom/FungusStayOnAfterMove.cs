@@ -11,8 +11,9 @@ namespace Application.Augments.Mushroom
 {
     public class FungusStayOnAfterMove : AugmentBase
     {
-        private static Stopwatch _stopwatch;
         private static bool _isActive;
+
+        private static Stopwatch _stopwatch;
         private const float DurationMilliSeconds = 1000;
 
         public override string Name => "Movement buffer";
@@ -20,6 +21,7 @@ namespace Application.Augments.Mushroom
         public override ItemIndex ItemType => ItemIndex.Mushroom;
         public override AugmentId Id => new AugmentId(nameof(FungusStayOnAfterMove));
         public override int MaxLevel => 1;
+        protected override bool GlobalLevels => true;
 
         public override void Activate()
         {
@@ -33,7 +35,7 @@ namespace Application.Augments.Mushroom
                 ilCursor.Remove();
                 ilCursor.EmitDelegate<Func<CharacterBody, bool>>((cb) =>
                 {
-                    if (!AugmentResolver.IsAugmentActiveForPlayer(ItemIndex.Crowbar,
+                    if (!AugmentResolver.IsAugmentActiveForPlayer(ItemType,
                         Id, 
                         cb.master.netId))
                     {

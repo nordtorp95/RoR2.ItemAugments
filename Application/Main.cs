@@ -10,7 +10,7 @@ namespace Application
     [BepInPlugin("com.Nordtorp.ItemTalentTree",
         "Item talent tree",
         "0.1.0")]
-    public class MyModName : BaseUnityPlugin
+    public class ItemAugments : BaseUnityPlugin
     {
 
         public GameObject ModCanvas = null;
@@ -38,23 +38,14 @@ namespace Application
                 var index = PickupCatalog.FindPickupIndex(ItemIndex.Mushroom);
                 var trans = PlayerCharacterMasterController.instances[0].master.GetBodyObject().transform;
                 PickupDropletController.CreatePickupDroplet(index, trans.position, trans.forward * 20f);
+                
+                var index2 = PickupCatalog.FindPickupIndex(ItemIndex.Hoof);
+                PickupDropletController.CreatePickupDroplet(index2, trans.position, trans.right * 20f);
             }
             
             if (Input.GetKeyDown(KeyCode.F3))
             {
                 showAugmentMenu = !showAugmentMenu;
-                var firstPlayer = PlayerCharacterMasterController.instances[0].master.netId;
-                var viewModel = AugmentShop.GetShopViewModel(firstPlayer);
-                Chat.AddMessage("Items in shop:");
-                foreach (var item in viewModel.Items)
-                {
-                    Chat.AddMessage($"Item name: {item.ItemIndex}, Points to spend: {item.PointsToSpend}");
-                    foreach (var augment in item.Augments)
-                    {
-                        Chat.AddMessage($"- AugmentName: {augment.Augment.Name}, Active: {augment.Active}, Available: {augment.Purchasable}");
-                    }
-                    Chat.AddMessage("------");
-                }
             }
             
             if (Input.GetKeyDown(KeyCode.F4))
@@ -62,7 +53,7 @@ namespace Application
                 var trans = PlayerCharacterMasterController.instances[0].master.GetBodyObject().transform;
                 
                 var index = PickupCatalog.FindPickupIndex(ItemIndex.TreasureCache);
-                PickupDropletController.CreatePickupDroplet(index, trans.position, trans.forward * 20f);
+                PickupDropletController.CreatePickupDroplet(index, trans.position, trans.forward * 40f);
 
                 Xoroshiro128Plus xoroshiro128Plus = new Xoroshiro128Plus((ulong)12);
                 GameObject gameObject3 = DirectorCore.instance.TrySpawnObject(new DirectorSpawnRequest(Resources.Load<SpawnCard>("SpawnCards/InteractableSpawnCard/iscLockbox"), new DirectorPlacementRule
@@ -80,6 +71,12 @@ namespace Application
                     }
                 }
             }
+            
+            if (Input.GetKeyDown(KeyCode.F5))
+            {
+                var scene = RoR2.Run.instance.nextStageScene;
+                RoR2.Run.instance.AdvanceStage(scene);
+            }
         }
 
         private static void InventoryHook(On.RoR2.GenericPickupController.orig_GrantItem orig,
@@ -92,12 +89,18 @@ namespace Application
             var itemDef = ItemCatalog.GetItemDef(item.itemIndex);
 
             var itemCount = inventory.GetItemCount(itemDef.itemIndex);
-            if (itemCount >= Application.Config.ConfigResolver.ItemCount(itemDef.tier) - 1)
+            var itemCost = Application.Config.ConfigResolver.ItemCount(itemDef.tier);
+            var canAdd = itemCount > 1 && itemCount % itemCost == 0;
+            
+            if (canAdd)
             {
                 var augments = AugmentResolver.ListAugmentsForItem(itemDef.itemIndex);
-                AugmentResolver.TryAddAugmentToPlayer(networkIdentity,
-                    itemDef.itemIndex,
-                    augments.FirstOrDefault().Value.Id);
+                if (augments != null && augments.Any())
+                {
+                    AugmentResolver.TryAddOrUpgradeAugmentToPlayer(networkIdentity,
+                        itemDef.itemIndex,
+                        augments.FirstOrDefault().Value.Id);
+                }
             }
 
             orig(self,

@@ -36,10 +36,12 @@ namespace Application.Services
                 foreach (var augment in item.Value)
                 {
                     var active = existingAugments.ContainsKey(augment.Key);
-                    var purchasable = pointsToSpend > 0;
+                    var level = augment.Value.GetLevel(clientId);
+                    var purchasable = pointsToSpend > 0 && level < augment.Value.MaxLevel;
                     var viewModel = new AugmentViewModel(augment.Value,
                         active,
-                        purchasable);
+                        purchasable,
+                        level);
                     augmentViewModels.Add(viewModel);
                 }
 
@@ -55,7 +57,7 @@ namespace Application.Services
             AugmentId augmentId,
             NetworkInstanceId clientId)
         {
-            return AugmentResolver.TryAddAugmentToPlayer(clientId,
+            return AugmentResolver.TryAddOrUpgradeAugmentToPlayer(clientId,
                 itemIndex,
                 augmentId);
         }

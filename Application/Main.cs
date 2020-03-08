@@ -36,7 +36,9 @@ namespace Application
             if (Input.GetKeyDown(KeyCode.F2))
             {
                 var index = PickupCatalog.FindPickupIndex(ItemIndex.Mushroom);
-                var trans = PlayerCharacterMasterController.instances[0].master.GetBodyObject().transform;
+                var player = PlayerCharacterMasterController.instances[0];
+                player.master.inventory.GiveEquipmentString(EquipmentIndex.Scanner.ToString());
+                var trans = player.master.GetBodyObject().transform;
                 PickupDropletController.CreatePickupDroplet(index, trans.position, trans.forward * 20f);
                 
                 var index2 = PickupCatalog.FindPickupIndex(ItemIndex.Hoof);

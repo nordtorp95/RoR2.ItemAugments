@@ -21,7 +21,8 @@ namespace Application.Services
             {ItemIndex.TreasureCache, new Dictionary<AugmentId, AugmentBase>
             {
                 //{new AugmentId(nameof(ChestTurnsRed)), new ChestTurnsRed()},
-                {new AugmentId(nameof(BoxSizeScaling)), new BoxSizeScaling()}
+                {new AugmentId(nameof(BoxSizeScaling)), new BoxSizeScaling()},
+                //{new AugmentId(nameof(AdditionalChestSpawn)), new AdditionalChestSpawn()}
             }}
         };
 
